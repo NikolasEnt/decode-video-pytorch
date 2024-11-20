@@ -1,0 +1,35 @@
+[tool.ruff]
+line-length = 79
+src = ["src", "scripts"]
+extend-exclude = ["data/"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle error
+    "W",  # pycodestyle warnings
+    "F",  # Pyflakes
+    "B",  # flake8-bugbear
+    "D",  # pydocstyle
+    "N",  # pep8-naming
+    ]
+ignore = [
+    "D10",  # D10?: Missing docstring
+    "I001"  # Imports are sorted by isort
+    ]
+unfixable = ["B"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.isort]
+length_sort = true
+multi_line_output = 2  # Hanging indent
+atomic = true
+line_length = 79
