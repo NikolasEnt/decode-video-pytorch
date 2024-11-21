@@ -1,0 +1,4 @@
+numpy==2.1.3
+kornia==0.7.4
+pyav==13.1.0  # for torchvision.io.read_video
+PyNvVideoCodec==1.0.2
