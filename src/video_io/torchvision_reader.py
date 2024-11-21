@@ -8,7 +8,7 @@ from torchvision.io import read_video, read_video_timestamps
 from src.video_io.abstract_reader import AbstractVideoReader
 
 
-class TorchvisionReadVideo(AbstractVideoReader):
+class TorchvisionVideoReader(AbstractVideoReader):
     """Videoreader using PyTorch's torchvision.io.read_video.
 
     Args:

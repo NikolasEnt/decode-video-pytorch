@@ -55,9 +55,9 @@ In addition, there are some other examples of video-related components in the pr
 ### Try one of the video readers:
 
 ```python
-from src.video_io import TorchvisionReadVideo
+from src.video_io import TorchvisionVideoReader
 
-video_reader = TorchvisionReadVideo(
+video_reader = TorchvisionVideoReader(
         "/workdir/data/videos/test.mp4", mode = "stream", output_format = "TCHW",
         device = "cuda:0")
 
