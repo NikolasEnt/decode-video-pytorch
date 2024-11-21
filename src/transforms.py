@@ -1,4 +1,8 @@
+"""An example of kornia-based video transforms.
 
+See documentation in:
+https://kornia.readthedocs.io/en/latest/augmentation.container.html#video-data-augmentation
+"""
 import kornia.augmentation as augm
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
