@@ -1,8 +1,12 @@
 # Video decoding for DL models training with PyTorch
 
-The repo was developed as an illustration for London PyTorch Meetup talk
-"Optimising Video Pipelines for Neural Network Training with PyTorch" on 21/11/2024
-by _Nikolay Falaleev_.
+The repo was developed as an illustration for [London PyTorch Meetup](https://www.meetup.com/London-PyTorch-Meetup/) talk:
+<h5 align="center">
+  Optimising Video Pipelines for Neural Network Training with PyTorch<br>
+      by <i>Nikolay Falaleev</i>  on 21/11/2024
+</h5>
+
+The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing).
 
 It containes examples of different approaches to video frames decoding, which can be used
 for training deep learning models with PyTorch.
