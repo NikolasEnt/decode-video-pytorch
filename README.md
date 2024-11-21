@@ -73,14 +73,18 @@ print(tensor.shape, tensor.device)  # Should be (20, 3, H, W), cuda:0
 All video readers classes uses the same interface and return PyTorch tensors.
 
 Arguments:
-    _video_path_ (str | Path): Path to the input video file.
-    _mode_ (Literal["seek", "stream"], optional): Reading mode: "seek" -
-        find each frame individually, "stream" - decode all frames in
-        the range of requested indeces and subsample.
-        Defaults to "stream".
-    _output_format_ (Literal["THWC", "TCHW"], optional): Data format:
-        channel last or first. Defaults to "THWC".
-    _device_ (str, optional): Device to send the resulted tensor to. If possible,
-        the same device will be used for HW acceleration of decoding. Defaults to "cuda:0".
 
-In the case of using `mode = "stream"`, one need to make sure all frames from the range `(min(frames_to_read), max(frames_to_read))` fit into VRAM.
+_video_path_ (str | Path): Path to the input video file.
+
+_mode_ (`seek` or `stream`): Reading mode: `seek` -
+find each frame individually, `stream` - decode all frames in
+the range of requested indeces and subsample.
+Defaults to `stream`.
+
+_output_format_ (`THWC` or `TCHW`): Data format:
+channel last or first. Defaults to `THWC`.
+
+_device_ (str, optional): Device to send the resulted tensor to. If possible,
+the same device will be used for HW acceleration of decoding. Defaults to `cuda:0`.
+
+When using `mode = 'stream'`, one needs to ensure that all frames in the range (min(frames_to_read), max(frames_to_read)) fit into VRAM.
