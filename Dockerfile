@@ -85,7 +85,6 @@ RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     -D BUILD_opencv_python3=ON \
     -D ENABLE_PRECOMPILED_HEADERS=OFF \
     -D WITH_OPENCL=OFF \
-    -D WITH_OPENCL=OFF \
     -D WITH_FFMPEG=ON \
     -D WITH_GSTREAMER=OFF \
     -D WITH_CUDA=ON \
