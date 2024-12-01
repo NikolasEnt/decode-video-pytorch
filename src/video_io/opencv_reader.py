@@ -22,6 +22,11 @@ class OpenCVVideoReader(AbstractVideoReader):
 
     Adjust the codec 'h264_cuvid' in accordance to the input video file codec.
 
+    Note:
+        Similarly, the video reader can be used to decode videos with other
+        hardware codecs, if FFmpeg is compiled with the appropriate hardware
+        support (e.g., Intel or AMD GPUs).
+
     Args:
         video_path (str | Path): Path to the input video file.
         mode (Literal["seek", "stream"], optional): Reading mode: "seek" -
