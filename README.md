@@ -1,6 +1,6 @@
 # Video decoding for DL models training with PyTorch
 
-The repo was developed as an illustration for [London PyTorch Meetup](https://www.meetup.com/London-PyTorch-Meetup/) talk:
+The repo was originally developed to illustrate a talk given at the [London PyTorch Meetup](https://www.meetup.com/London-PyTorch-Meetup/):
 <h5 align="center">
   Optimising Video Pipelines for Neural Network Training with PyTorch<br>
       by <i>Nikolay Falaleev</i>  on 21/11/2024
@@ -11,7 +11,7 @@ The talk's slides are available [here](https://docs.google.com/presentation/d/1Q
 It containes examples of different approaches to video frames decoding, which can be used
 for training deep learning models with PyTorch.
 
-## Prerequiremets
+## Prerequisites
 
 * Nvidia GPU with Video Encode and Decode feature [CUVID](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new). Nvidia Driver version >= 535.
 * GNU [make](https://www.gnu.org/software/make/) - it is quite likely that it is already installed on your system.
@@ -37,12 +37,12 @@ All the following can be executed inside the running container.
 
 ## Code navigation
 
-Several base video readers classes are provided in [src/video_io](src/video_io),
-all of them follows te same interface and inherit from [AbstractVideoReader](src/video_io/abstract_reader.py).
+Several base video readers classes are provided in [src/video_io](src/video_io)]; they follow the same interface and inherit from [AbstractVideoReader](src/video_io/abstract_reader.py).
 
-* [OpenCVVideoReader](src/video_io/opencv_reader.py) - uses OpenCV's `cv2.VideoCapture` with FFmpeg backend. It is the most straightforward way to read videos. Use `os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"` to enable hardware acceleration. Adjust the video codec `h264_cuvid` parameter to match your video codec, e.g. `h264_cuvid` for h.264 codec and `hevc_cuvid` for HEVC codec; see all available codecs with Nvidia HW acceleration `ffmpeg -decoders | grep -i nvidia`.
+* [OpenCVVideoReader](src/video_io/opencv_reader.py) - Uses OpenCV's `cv2.VideoCapture` with the FFmpeg backend. It is the most straightforward way to read videos. Use `os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"` to enable hardware acceleration. Adjust the video codec `h264_cuvid` parameter to match your video codec, e.g. `h264_cuvid` for h.264 codec and `hevc_cuvid` for HEVC codec; see all available codecs with Nvidia HW acceleration `ffmpeg -decoders | grep -i nvidia`.
 * [TorchvisionReadVideo](src/video_io/torchvision_reader.py) - uses PyTorch's `torchvision.io` module.
-* [TorchcodecVideoReader](src/video_io/torchcodec_reader.py) - uses [TorchCodec](https://github.com/pytorch/torchcodec) library. As TorchCodec is still in early stages of development and is installed from nightly builds, it may not work at some point or the API may change. This is likely the fastest vide reader in the project.
+* [TorchcodecVideoReader](src/video_io/torchcodec_reader.py) - uses [TorchCodec](https://github.com/pytorch/torchcodec) library. As TorchCodec is still in early stages of development and is installed from nightly builds, it may not work at some point or the API may change. This is likely to be the fastest vide reader in the project.
+* [VALIVideoReader](src/video_io/vali_reader.py) - uses [VALI](https://github.com/RomanArzumanyan/VALI) library, which is a continuation of the [VideoProcessingFramework](https://github.com/NVIDIA/VideoProcessingFramework) project, which was discontinued by Nvidia. Unlike [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/), which is the current substitution by Nvidia, VALI offers a more flexible solution that includes pixel format and color space conversion capabilities, as well as some low-level operations on surfaces. This allows it to be more powerful than PyNvVideoCodec, although it has a steeper learning curve, VALI allows for building more complex and optimized pipelines.
 
 A simple benchmark script is provided in [scripts/benchmark.py](src/scripts/benchmark.py). It compares the performance of different readers. Adjust parameters of the benchmark as required. To run the script,run the following command in the project container:
 
