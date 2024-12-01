@@ -53,7 +53,17 @@ class AbstractVideoReader(metaclass=ABCMeta):
 
     @abstractmethod
     def stream_read(self, frame_indices: list[int]) -> list[np.ndarray]:
-        """Read all frames in range of the given indices and subset them."""
+        """Read all frames in range of the given indices and subset them.
+
+        Args:
+            frame_indices (list[int]): List of frame indices to read. Indices
+                are expected to be sorted, it is expected to be at least one
+                index in the list.
+
+        Returns:
+           list[np.ndarray]: List of frames from the video.
+
+        """
         pass
 
     def read_frames(self, frame_indices: list[int]) -> torch.Tensor:
