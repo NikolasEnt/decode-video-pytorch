@@ -44,7 +44,7 @@ Several base video readers classes are provided in [src/video_io](src/video_io)]
 * [TorchcodecVideoReader](src/video_io/torchcodec_reader.py) - uses [TorchCodec](https://github.com/pytorch/torchcodec) library. As TorchCodec is still in early stages of development and is installed from nightly builds, it may not work at some point or the API may change. This is likely to be the fastest vide reader in the project.
 * [VALIVideoReader](src/video_io/vali_reader.py) - uses [VALI](https://github.com/RomanArzumanyan/VALI) library, which is a continuation of the [VideoProcessingFramework](https://github.com/NVIDIA/VideoProcessingFramework) project, which was discontinued by Nvidia. Unlike [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/), which is the current substitution by Nvidia, VALI offers a more flexible solution that includes pixel format and color space conversion capabilities, as well as some low-level operations on surfaces. This allows it to be more powerful than PyNvVideoCodec, although it has a steeper learning curve, VALI allows for building more complex and optimized pipelines.
 
-A simple benchmark script is provided in [scripts/benchmark.py](src/scripts/benchmark.py). It compares the performance of different readers. Adjust parameters of the benchmark as required. To run the script,run the following command in the project container:
+A simple benchmark script is provided in [scripts/benchmark.py](scripts/benchmark.py). It compares the performance of different readers. Adjust parameters of the benchmark as required. To run the script, run the following command in the project container:
 
 ```bash
 python scripts/benchmark.py
