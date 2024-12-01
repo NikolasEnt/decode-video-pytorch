@@ -1,10 +1,11 @@
+import os
 import time
 
 import numpy as np
 import torch
 
-from src.video_io import OpenCVVideoReader, AbstractVideoReader, \
-    TorchvisionVideoReader
+from src.video_io import VALIVideoReader, OpenCVVideoReader, \
+    AbstractVideoReader, TorchvisionVideoReader
 
 VIDEO_PATH = "/workdir/data/videos/test.mp4"
 N_PASSES = 3  # Number of times to repeat the benchmark for each video
@@ -16,9 +17,16 @@ FRAMES_TO_READ_SLICE = list(range(10, 200, 10))
 VIDEO_READERS = [
     OpenCVVideoReader,
     TorchvisionVideoReader,
+    VALIVideoReader
 ]
+
 MODES_TO_USE = ["seek", "stream"]
 DEVICE = "cuda:0"  # Device to use for the benchmark
+
+
+if DEVICE.startswith('cuda:'):
+    os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(DEVICE.split(':')[1])
 
 
 def run_benchmark(video_reader: AbstractVideoReader,
