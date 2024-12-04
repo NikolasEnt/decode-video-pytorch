@@ -8,7 +8,7 @@ The repo was originally developed to illustrate a talk given at the [London PyTo
 
 The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing).
 
-It containes examples of different approaches to video frames decoding, which can be used
+It contains examples of different approaches to video frames decoding, which can be used
 for training deep learning models with PyTorch.
 
 ## Prerequisites
@@ -37,7 +37,7 @@ All the following can be executed inside the running container.
 
 ## Code navigation
 
-Several base video readers classes are provided in [src/video_io](src/video_io)]; they follow the same interface and inherit from [AbstractVideoReader](src/video_io/abstract_reader.py).
+Several base video readers classes are provided in [src/video_io](src/video_io); they follow the same interface and inherit from [AbstractVideoReader](src/video_io/abstract_reader.py).
 
 * [OpenCVVideoReader](src/video_io/opencv_reader.py) - Uses OpenCV's `cv2.VideoCapture` with the FFmpeg backend. It is the most straightforward way to read videos. Use `os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"` to enable hardware acceleration. Adjust the video codec `h264_cuvid` parameter to match your video codec, e.g. `h264_cuvid` for h.264 codec and `hevc_cuvid` for HEVC codec; see all available codecs with Nvidia HW acceleration `ffmpeg -decoders | grep -i nvidia`.
 * [TorchvisionReadVideo](src/video_io/torchvision_reader.py) - uses PyTorch's `torchvision.io` module.
@@ -77,13 +77,13 @@ _video_path_ (str or Path): Path to the input video file.
 
 _mode_ (`seek` or `stream`): Reading mode: `seek` -
 find each frame individually, `stream` - decode all frames in
-the range of requested indeces and subsample.
+the range of requested indeces and subsample. When using `mode = 'stream'`,
+one needs to ensure that all frames in the range
+(min(frames_to_read), max(frames_to_read)) fit into VRAM.
 Defaults to `stream`.
 
 _output_format_ (`THWC` or `TCHW`): Data format:
-channel last or first. Defaults to `THWC`.
+channels-last or channels-first. Defaults to `THWC`.
 
 _device_ (str, optional): Device to send the resulted tensor to. If possible,
 the same device will be used for HW acceleration of decoding. Defaults to `cuda:0`.
-
-When using `mode = 'stream'`, one needs to ensure that all frames in the range (min(frames_to_read), max(frames_to_read)) fit into VRAM.
