@@ -8,19 +8,18 @@ The repo was originally developed to illustrate a talk given at the [London PyTo
 
 The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing).
 
-It contains examples of different approaches to video frames decoding, which can be used
-for training deep learning models with PyTorch.
+It contains examples of different approaches to decoding video frames directly into tensors, which can be used for training deep learning models with PyTorch.
 
 ## Prerequisites
 
 * Nvidia GPU with Video Encode and Decode feature [CUVID](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new). Nvidia Driver version >= 535.
 * GNU [make](https://www.gnu.org/software/make/) - it is quite likely that it is already installed on your system.
 * [Docker](https://docs.docker.com/engine/install/) and [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
-* Some video files for testing, put them in `/data/videos` directory.
+* Some video files for testing, put them in `data/videos` directory.
 
 ## How to run
 
-The project is provided with a Docker environment with PyTorch as well as FFmpeg and OpenCV compiled with Nvidia HW acceleration support.
+The project is provided with a Docker environment that includes PyTorch, as well as FFmpeg and OpenCV, which are compiled with NVIDIA hardware acceleration support.
 
 1. Build Docker image:
 
@@ -32,6 +31,8 @@ make build
 ```
 make run
 ```
+
+The Docker container will have the project folder mounted to `/workdir`, including the contents of data and all the code.
 
 All the following can be executed inside the running container.
 
@@ -49,7 +50,6 @@ A simple benchmark script is provided in [scripts/benchmark.py](scripts/benchmar
 ```bash
 python scripts/benchmark.py
 ```
-
 
 In addition, there are some other examples of video-related components in the project:
 * [Kornia video augmentations](src/transforms.py) transforms.
