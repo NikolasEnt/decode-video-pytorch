@@ -32,7 +32,7 @@ make build
 make run
 ```
 
-The Docker container will have the project folder mounted to `/workdir`, including the contents of data and all the code.
+The Docker container will have the project folder mounted to `/workdir`, including the contents of `data` and all the code.
 
 All the following can be executed inside the running container.
 
