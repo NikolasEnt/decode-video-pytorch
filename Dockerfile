@@ -67,8 +67,8 @@ RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/
 # Main system requirements
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
-# Install torchcodec for nightly builds of PyTorch with GPU support
-RUN pip3 install torchcodec -i https://download.pytorch.org/whl/nightly/cu124
+# Install torchcodec from the PyTorch repo with GPU support
+RUN pip3 install torchcodec==0.1.1 -i https://download.pytorch.org/whl/cu124
 
 RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     wget https://github.com/opencv/opencv/archive/4.10.0.zip -O opencv-4.10.0.zip && \
