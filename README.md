@@ -3,7 +3,7 @@
 The repo was originally developed to illustrate a talk given at the [London PyTorch Meetup](https://www.meetup.com/London-PyTorch-Meetup/):
 <h5 align="center">
   Optimising Video Pipelines for Neural Network Training with PyTorch<br>
-      by <i>Nikolay Falaleev</i>  on 21/11/2024
+      by <i>Nikolay Falaleev</i> on 21/11/2024
 </h5>
 
 The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing).
@@ -77,7 +77,7 @@ _video_path_ (str or Path): Path to the input video file.
 
 _mode_ (`seek` or `stream`): Reading mode: `seek` -
 find each frame individually, `stream` - decode all frames in
-the range of requested indeces and subsample. When using `mode = 'stream'`,
+the range of requested indices and subsample. When using `mode = 'stream'`,
 one needs to ensure that all frames in the range
 (min(frames_to_read), max(frames_to_read)) fit into VRAM.
 Defaults to `stream`.
