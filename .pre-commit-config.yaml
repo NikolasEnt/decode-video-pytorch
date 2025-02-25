@@ -11,12 +11,12 @@ repos:
     -   id: detect-private-key
     -   id: check-merge-conflict
 -   repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.0.0
     hooks:
       - id: isort
         name: isort (python)
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.3
+    rev: v0.9.7
     hooks:
     -   id: ruff
         types_or: [ python, pyi, jupyter ]
