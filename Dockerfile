@@ -55,7 +55,7 @@ RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/
     --enable-libx265 \
     --enable-libmp3lame \
     --extra-libs=-lpthread \
-    --nvccflags="-arch=sm_75 \
+   --nvccflags="-arch=sm_75 \
     -gencode=arch=compute_75,code=sm_75 \
     -gencode=arch=compute_80,code=sm_80 \
     -gencode=arch=compute_86,code=sm_86 \
@@ -68,7 +68,7 @@ RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 # Install torchcodec from the PyTorch repo with GPU support
-RUN pip3 install torchcodec==0.1.1 -i https://download.pytorch.org/whl/cu124
+RUN pip3 install torchcodec==0.2.0 -i https://download.pytorch.org/whl/cu124
 
 RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     wget https://github.com/opencv/opencv/archive/4.10.0.zip -O opencv-4.10.0.zip && \
