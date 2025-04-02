@@ -23,10 +23,6 @@ RUN apt-get update && apt -y upgrade && \
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 RUN pip3 install --upgrade pip
 
-# Install PyTorch
-RUN pip3 install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url\
-    https://download.pytorch.org/whl/cu124
-
 # Build nvidia codec headers
 RUN git clone --depth=1 --branch=n12.1.14.0 \
     --single-branch https://github.com/FFmpeg/nv-codec-headers.git && \
@@ -64,17 +60,11 @@ RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/
     make -j$(nproc) && make install && ldconfig && \
     cd ../.. && rm -rf FFmpeg
 
-# Main system requirements
-COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt
-# Install torchcodec from the PyTorch repo with GPU support
-RUN pip3 install torchcodec==0.2.0 -i https://download.pytorch.org/whl/cu124
-
 RUN mkdir /tmp/opencv && cd /tmp/opencv && \
-    wget https://github.com/opencv/opencv/archive/4.10.0.zip -O opencv-4.10.0.zip && \
-    unzip opencv-4.10.0.zip && cd opencv-4.10.0 && \
-    wget https://github.com/opencv/opencv_contrib/archive/4.10.0.zip -O opencv_contrib-4.10.0.zip && \
-    unzip opencv_contrib-4.10.0.zip && \
+    wget https://github.com/opencv/opencv/archive/4.11.0.zip -O opencv-4.11.0.zip && \
+    unzip opencv-4.11.0.zip && cd opencv-4.11.0 && \
+    wget https://github.com/opencv/opencv_contrib/archive/4.11.0.zip -O opencv_contrib-4.11.0.zip && \
+    unzip opencv_contrib-4.11.0.zip && \
     mkdir build && cd build && \
     cmake -D CMAKE_BUILD_TYPE=Release\
     -D CMAKE_INSTALL_PREFIX=/usr/local \
@@ -93,9 +83,18 @@ RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     -D WITH_PROTOBUF=OFF \
     -D BUILD_LIST=python3,core,imgproc,imgcodecs,videoio,video,calib3d,flann,cudev,cudacodec \
     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-    -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv/opencv-4.10.0/opencv_contrib-4.10.0/modules/ .. && \
+    -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv/opencv-4.11.0/opencv_contrib-4.11.0/modules/ .. && \
     make -j$(nproc) && make install && ldconfig && rm -r /tmp/opencv
 
+# Install PyTorch
+RUN pip3 install torch==2.6.0 torchvision==0.21 torchaudio==2.6.0 --index-url\
+    https://download.pytorch.org/whl/cu124
+
+# Main system requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
+# Install torchcodec from the PyTorch repo with GPU support
+RUN pip3 install torchcodec==0.2.1 -i https://download.pytorch.org/whl/cu124
 
 ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
 ENV PYTHONPATH $PYTHONPATH:/workdir
