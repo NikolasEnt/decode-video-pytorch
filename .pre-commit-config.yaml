@@ -16,11 +16,8 @@ repos:
       - id: isort
         name: isort (python)
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.0
+    rev: v0.11.6
     hooks:
     -   id: ruff
         types_or: [ python, pyi, jupyter ]
         args: [ --fix ]
-    # Incomment to enable the formatter
-    # -   id: ruff-format
-    #     types_or: [ python, pyi, jupyter ]
