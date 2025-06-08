@@ -38,7 +38,7 @@ class TorchcodecVideoReader(AbstractVideoReader):
         self.fps = self.decoder.metadata.average_fps
 
     def _to_tensor(self, frames: torch.Tensor) -> torch.Tensor:
-        return frames.tp(self.device)
+        return frames.to(self.device)
 
     def seek_read(self, frame_indices: List[int]) -> torch.Tensor:
         """Retrieve frames by their indices using random access."""
