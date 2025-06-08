@@ -1,36 +1,34 @@
-ARG CUDA_VERSION=12.4.1
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu22.04
+ARG CUDA_VERSION=12.8.1
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu24.04
 
 ENV LANG C.UTF-8
 ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt -y upgrade && \
-    apt-get -y install software-properties-common apt-utils git && \
-    add-apt-repository -y ppa:deadsnakes/ppa && apt-get update && \
-    apt-get -y install build-essential yasm nasm cmake unzip wget curl \
+    apt-get -y install software-properties-common apt-utils git \
+    build-essential yasm nasm cmake unzip wget curl \
     libtcmalloc-minimal4 pkgconf autoconf libtool libc6 libc6-dev \
     libnuma1 libnuma-dev libx264-dev libx265-dev libmp3lame-dev \
-    python3-setuptools python3.11 python3.11-dev python3.11-distutils && \
-    ln -s /usr/bin/python3.11 /usr/bin/python && \
-    ln -sf /usr/bin/python3.11 /usr/bin/python3 && \
+    python3-pip python3.12-dev python3-numpy && \
+    ln -s /usr/bin/python3.12 /usr/bin/python && \
+    ln -sf /usr/bin/python3.12 /usr/bin/python3 && \
     ln -sf /usr/bin/pip3 /usr/bin/pip && \
     apt-get clean &&\
     apt-get autoremove &&\
     rm -rf /var/lib/apt/lists/* &&\
     rm -rf /var/cache/apt/archives/*
 
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
-RUN pip3 install --upgrade pip
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
 # Build nvidia codec headers
-RUN git clone --depth=1 --branch=n12.1.14.0 \
+RUN git clone --depth=1 --branch=n13.0.19.0 \
     --single-branch https://github.com/FFmpeg/nv-codec-headers.git && \
     cd nv-codec-headers && make install && \
     cd .. && rm -rf nv-codec-headers
 
 # Build FFmpeg with NVENC support
-RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/FFmpeg.git && \
+RUN git clone --depth=1 --branch=n7.1.1 --single-branch https://github.com/FFmpeg/FFmpeg.git && \
     cd FFmpeg && \
     mkdir ffmpeg_build && cd ffmpeg_build && \
     ../configure \
@@ -51,7 +49,7 @@ RUN git clone --depth=1 --branch=n6.1 --single-branch https://github.com/FFmpeg/
     --enable-libx265 \
     --enable-libmp3lame \
     --extra-libs=-lpthread \
-   --nvccflags="-arch=sm_75 \
+    --nvccflags="-arch=sm_75 \
     -gencode=arch=compute_75,code=sm_75 \
     -gencode=arch=compute_80,code=sm_80 \
     -gencode=arch=compute_86,code=sm_86 \
@@ -84,17 +82,15 @@ RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     -D BUILD_LIST=python3,core,imgproc,imgcodecs,videoio,video,calib3d,flann,cudev,cudacodec \
     -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
     -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv/opencv-4.11.0/opencv_contrib-4.11.0/modules/ .. && \
-    make -j$(nproc) && make install && ldconfig && rm -r /tmp/opencv
+    make -j$(nproc) && make install && ldconfig && cd && rm -r /tmp/opencv
 
 # Install PyTorch
-RUN pip3 install torch==2.6.0 torchvision==0.21 torchaudio==2.6.0 --index-url\
-    https://download.pytorch.org/whl/cu124
+RUN pip3 install --no-cache-dir torch==2.7.0 torchvision==0.22 torchaudio==2.7.0 torchcodec==0.4.0 --index-url\
+    https://download.pytorch.org/whl/cu128
 
 # Main system requirements
 COPY requirements.txt /tmp/requirements.txt
-RUN pip3 install -r /tmp/requirements.txt
-# Install torchcodec from the PyTorch repo with GPU support
-RUN pip3 install torchcodec==0.2.1 -i https://download.pytorch.org/whl/cu124
+RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
 ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
 ENV PYTHONPATH $PYTHONPATH:/workdir
