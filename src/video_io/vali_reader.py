@@ -52,11 +52,7 @@ class VALIVideoReader(AbstractVideoReader):
 
         # NV12 -> RGB conversion. Feel free to adjust as needed
         target_format = vali.PixelFormat.RGB
-        self._nv12_to_rgb = vali.PySurfaceConverter(
-            src_format=self._decoder.Format,
-            dst_format=target_format,
-            gpu_id=self.device_id,
-        )
+        self._nv12_to_rgb = vali.PySurfaceConverter(gpu_id=self.device_id)
 
         self.surf_nv12 = vali.Surface.Make(
             format=vali.PixelFormat.NV12, width=self.width, height=self.height,
