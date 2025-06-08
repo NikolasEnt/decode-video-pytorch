@@ -5,7 +5,7 @@ import numpy as np
 import torch
 
 from src.video_io import VALIVideoReader, OpenCVVideoReader, \
-    AbstractVideoReader, TorchvisionVideoReader
+    AbstractVideoReader, TorchcodecVideoReader, TorchvisionVideoReader
 
 VIDEO_PATH = "/workdir/data/videos/test.mp4"
 N_PASSES = 3  # Number of times to repeat the benchmark for each video
@@ -15,6 +15,7 @@ FRAMES_TO_READ_SLICE = list(range(10, 200, 10))
 
 # Adjust the list of video readers to benchmark as needed
 VIDEO_READERS = [
+    TorchcodecVideoReader,
     OpenCVVideoReader,
     TorchvisionVideoReader,
     VALIVideoReader
