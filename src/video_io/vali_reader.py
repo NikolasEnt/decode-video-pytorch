@@ -70,14 +70,7 @@ class VALIVideoReader(AbstractVideoReader):
     def _decode_surface(self, surface: vali.Surface) -> torch.Tensor:
         self._nv12_to_rgb.Run(surface, self.surf_rgb, cc_ctx=self._cc_ctx)
         frame_tensor = torch.from_dlpack(self.surf_rgb)
-        frame_tensor = frame_tensor.clone().detach()
         return frame_tensor
-
-    def _to_tensor(self, frames: torch.Tensor) -> torch.Tensor:
-        frames = frames.to(self.device)
-        if self.output_format == "TCHW":
-            frames = frames.permute(0, 3, 1, 2)
-        return frames
 
     def seek_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         frame_tensors = []
@@ -88,10 +81,9 @@ class VALIVideoReader(AbstractVideoReader):
             if not success:
                 raise RuntimeError(f"Failed to decode frame {idx}: {details}")
             frame_tensors.append(self._decode_surface(self.surf_nv12))
-        tensor = torch.stack(frame_tensors, dim=0)
-        return tensor
+        return frame_tensors
 
-    def stream_read(self, frame_indices: list[int]) -> torch.Tensor:
+    def stream_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         start_idx = frame_indices[0]  # Assuming the indices are sorted
         seek_ctx = vali.SeekContext(start_idx)
         success, details = self._decoder.DecodeSingleSurface(
@@ -107,8 +99,7 @@ class VALIVideoReader(AbstractVideoReader):
                 raise RuntimeError(f"Failed to decode frame {idx}: {details}")
             if idx in frame_indices:
                 frame_tensors.append(self._decode_surface(self.surf_nv12))
-        tensor = torch.stack(frame_tensors, dim=0)
-        return tensor
+        return frame_tensors
 
     def release(self) -> None:
         del self._decoder

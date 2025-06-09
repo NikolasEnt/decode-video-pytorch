@@ -1,5 +1,5 @@
 import os
-from typing import Any, Literal
+from typing import Literal
 from pathlib import Path
 
 import cv2
@@ -18,7 +18,7 @@ class OpenCVVideoReader(AbstractVideoReader):
     To enable Nvidia GPU decoding, add the following:
 
     os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # GPU to use for decoding
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"  # Set the GPU to use for decoding
 
     Adjust the codec 'h264_cuvid' in accordance to the input video file codec.
 
@@ -51,7 +51,10 @@ class OpenCVVideoReader(AbstractVideoReader):
         self.num_frames = int(self._cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.fps = self._cap.get(cv2.CAP_PROP_FPS)
 
-    def seek_read(self, frame_indices: list[int]) -> list[np.ndarray]:
+    def _process_frame(self, frame: np.ndarray) -> torch.Tensor:
+        return torch.from_numpy(frame).to(self.device)
+
+    def seek_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         frames = []
         for idx in frame_indices:
             self._cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
@@ -62,7 +65,7 @@ class OpenCVVideoReader(AbstractVideoReader):
                 break
         return frames
 
-    def stream_read(self, frame_indices: list[int]) -> list[np.ndarray]:
+    def stream_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         frames = []
         start_idx = min(frame_indices)
         end_idx = max(frame_indices) + 1
@@ -73,13 +76,6 @@ class OpenCVVideoReader(AbstractVideoReader):
                 break
             if idx in frame_indices:
                 frames.append(self._process_frame(frame))
-        return frames
-
-    def _to_tensor(self, frames: Any) -> torch.Tensor:
-        frames = torch.stack([torch.from_numpy(frame)
-                              for frame in frames], dim=0).to(self.device)
-        if self.output_format == "TCHW":
-            frames = frames.permute(0, 3, 1, 2)
         return frames
 
     def release(self):

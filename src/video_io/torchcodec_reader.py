@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import Literal
 from pathlib import Path
 
 import torch
@@ -30,17 +30,14 @@ class TorchcodecVideoReader(AbstractVideoReader):
                          device=device)
 
     def _initialize_reader(self) -> None:
-        dimension_order = "NHWC" if self.output_format == 'THWC' else 'NCHW'
+        # Tensor axis order rearranged in _finalize_tensor if required
         self.decoder = VideoDecoder(self.video_path,
-                                    dimension_order=dimension_order,
+                                    dimension_order="NHWC",
                                     device=self.device)
         self.num_frames = self.decoder.metadata.num_frames
         self.fps = self.decoder.metadata.average_fps
 
-    def _to_tensor(self, frames: torch.Tensor) -> torch.Tensor:
-        return frames.to(self.device)
-
-    def seek_read(self, frame_indices: List[int]) -> torch.Tensor:
+    def seek_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         """Retrieve frames by their indices using random access."""
         frames = []
         for idx in frame_indices:
@@ -48,9 +45,9 @@ class TorchcodecVideoReader(AbstractVideoReader):
                 raise ValueError(f"Invalid frame index: {idx}")
             frame = self.decoder[idx]
             frames.append(self._process_frame(frame))
-        return torch.stack(frames, dim=0)
+        return frames
 
-    def stream_read(self, frame_indices: List[int]) -> torch.Tensor:
+    def stream_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         start_idx, end_idx = min(frame_indices), max(frame_indices)
         if start_idx < 0 or end_idx >= self.num_frames:
             raise ValueError(f"Invalid frame indices: {frame_indices}")
@@ -58,8 +55,7 @@ class TorchcodecVideoReader(AbstractVideoReader):
             start=start_idx, stop=end_idx + 1, step=1)
         frames = batch.data  # Frames in TCHW format
         relative_indices = [idx - start_idx for idx in frame_indices]
-        selected_frames = frames[relative_indices]  # Subset selection
-        return self._to_tensor(selected_frames)
+        return frames[relative_indices]
 
     def _read_frames_slice(self, start_idx: int, stop_idx: int, step: int)\
             -> torch.Tensor:

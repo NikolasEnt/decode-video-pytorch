@@ -3,8 +3,9 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Literal
 from pathlib import Path
 
-import numpy as np
 import torch
+
+from src.video_io.utils import get_device_id
 
 
 class AbstractVideoReader(metaclass=ABCMeta):
@@ -12,47 +13,74 @@ class AbstractVideoReader(metaclass=ABCMeta):
                  mode: Literal["seek", "stream"] = "stream",
                  output_format: Literal["THWC", "TCHW"] = "THWC",
                  device: str = "cuda:0") -> None:
+        self.video_path = self._validate_and_convert_path(video_path)
+        self.mode = self._validate_mode(mode)
+        self.output_format = self._validate_output_format(output_format)
+        self.device = device
+        self.gpu_id = get_device_id(device)
 
+        # Values to be initialised
+        self.num_frames: int = 0
+        self.fps: int | float = 0
+        self._initialize_reader()
+
+    def _validate_and_convert_path(self, video_path: str | Path) -> str:
         if isinstance(video_path, Path):
             video_path = str(video_path)
         if not os.path.exists(video_path):
             raise FileNotFoundError(f"Video file {video_path} does not exist")
+        return video_path
+
+    def _validate_mode(self, mode: Literal["seek", "stream"]) -> str:
         if mode not in ["seek", "stream"]:
-            raise ValueError(f"Invalid mode {mode}. "
-                             "Must be one of ['seek', 'stream']")
+            raise ValueError(
+                f"Invalid mode '{mode}'. Must be one of ['seek', 'stream']")
+        return mode
+
+    def _validate_output_format(
+            self, output_format: Literal["THWC", "TCHW"]) -> str:
         if output_format not in ["THWC", "TCHW"]:
-            raise ValueError(f"Invalid output_format {format}. "
-                             "Must be one of ['THWC', 'TCHW']")
-        self.video_path = video_path
-        self.mode = mode
-        self.output_format = output_format
-        self.device = device
-        # Values to be initialised
-        self.num_frames: int = 0  # Number of frames in the video
-        self.fps: int | float = 0
-        self._initialize_reader()
+            raise ValueError(
+                f"Invalid output format '{output_format}'. "
+                "Must be one of ['THWC', 'TCHW']")
+        return output_format
 
     @abstractmethod
     def _initialize_reader(self) -> None:
         """Initialise metadata and prepare reader for reading the video."""
         pass
 
-    @abstractmethod
-    def _to_tensor(self, frames: Any) -> torch.Tensor:
-        return torch.tensor(frames, device=self.device)
+    def _finalize_tensor(
+            self, frames: list[torch.Tensor] | torch.Tensor) -> torch.Tensor:
+        """Combine frame tensors and finalize the output format.
 
-    def _process_frame(self, frame: np.ndarray | torch.Tensor)\
-            -> np.ndarray | torch.Tensor:
-        """Process an individual frame stacking."""
+        Args:
+            frames (list[torch.Tensor] | torch.Tensor): A list of frame tensors
+                to be combined or a single tensor of shape THWC.
+
+        Returns:
+            torch.Tensor: The unified and finalized tensor.
+        """
+        if isinstance(frames, list):
+            tensor = torch.stack(frames, dim=0)
+        else:
+            tensor = frames
+        tensor = tensor.to(self.device)
+        if self.output_format == "TCHW":
+            tensor = tensor.permute(0, 3, 1, 2)
+        return tensor
+
+    def _process_frame(self, frame: Any) -> torch.Tensor:
+        """Process an individual frame if required and convert it to tensor."""
         return frame
 
     @abstractmethod
-    def seek_read(self, frame_indices: list[int]) -> list[np.ndarray]:
+    def seek_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         """Seek to each frame and read the frames from the video one by one."""
         pass
 
     @abstractmethod
-    def stream_read(self, frame_indices: list[int]) -> list[np.ndarray]:
+    def stream_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
         """Read all frames in range of the given indices and subset them.
 
         Args:
@@ -76,7 +104,7 @@ class AbstractVideoReader(metaclass=ABCMeta):
             frames = self.seek_read(frame_indices)
         elif self.mode == "stream":
             frames = self.stream_read(frame_indices)
-        return self._to_tensor(frames)
+        return self._finalize_tensor(frames)
 
     @abstractmethod
     def release(self) -> None:
@@ -116,4 +144,5 @@ class AbstractVideoReader(metaclass=ABCMeta):
             f"Index must be an integer or slice, not {type(index)}")
 
     def __repr__(self) -> str:
-        return f"Video {self.video_path} {self.num_frames}frames@{self.fps}fps"
+        return (f"Video {self.video_path}: "
+                f"{self.num_frames} frames @ {self.fps}fps")
