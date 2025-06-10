@@ -48,7 +48,7 @@ class TorchvisionVideoReader(AbstractVideoReader):
             frame, _, _ = read_video(
                 self.video_path, start_pts=ts, end_pts=ts,
                 pts_unit="sec", output_format="THWC")
-            frames.append(self._process_frame(frame))
+            frames.append(self._process_frame(frame[0]))
         return frames
 
     def stream_read(self, frame_indices: list[int]) -> torch.Tensor:
