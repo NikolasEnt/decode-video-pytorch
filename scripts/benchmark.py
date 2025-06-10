@@ -31,6 +31,7 @@ DEVICE = "cuda:0"
 if DEVICE.startswith("cuda:"):
     os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"
     os.environ["CUDA_VISIBLE_DEVICES"] = str(DEVICE.split(":")[1])
+    DEVICE = "cuda:0"  # Since other devices are invisible now
 
 
 def run_benchmark(video_reader: AbstractVideoReader,
