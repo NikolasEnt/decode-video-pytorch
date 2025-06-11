@@ -12,7 +12,7 @@ It contains examples of different approaches to decoding video frames directly i
 
 ## Prerequisites
 
-* Nvidia GPU with Video Encode and Decode feature [CUVID](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new). Nvidia Driver version >= 535.
+* Nvidia GPU with Video Encode and Decode feature [CUVID](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new). Nvidia Driver version >= 570.
 * GNU [make](https://www.gnu.org/software/make/) - it is quite likely that it is already installed on your system.
 * [Docker](https://docs.docker.com/engine/install/) and [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 * Some video files for testing, put them in `data/videos` directory.
@@ -40,10 +40,11 @@ All the following can be executed inside the running container.
 
 Several base video readers classes are provided in [src/video_io](src/video_io); they follow the same interface and inherit from [AbstractVideoReader](src/video_io/abstract_reader.py).
 
-* [OpenCVVideoReader](src/video_io/opencv_reader.py) - Uses OpenCV's `cv2.VideoCapture` with the FFmpeg backend. It is the most straightforward way to read videos. Use `os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"` to enable hardware acceleration. Adjust the video codec `h264_cuvid` parameter to match your video codec, e.g. `h264_cuvid` for h.264 codec and `hevc_cuvid` for HEVC codec; see all available codecs with Nvidia HW acceleration `ffmpeg -decoders | grep -i nvidia`.
+* [OpenCVVideoReader](src/video_io/opencv_reader.py) - Uses OpenCV's `cv2.VideoCapture` with the FFmpeg backend. It is the most straightforward way to read videos. Use `os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "video_codec;h264_cuvid"` to enable hardware acceleration. Adjust the video codec `h264_cuvid` parameter to match your video codec, e.g. `h264_cuvid` for h.264 codec and `hevc_cuvid` for HEVC codec; see all available codecs with Nvidia HW acceleration `ffmpeg -decoders | grep -i nvidia`. The provided Docker image includes OpenCV with hardware acceleration enabled, as well as FFmpeg compiled with Nvidia components.
 * [TorchvisionReadVideo](src/video_io/torchvision_reader.py) - uses PyTorch's `torchvision.io` module.
-* [TorchcodecVideoReader](src/video_io/torchcodec_reader.py) - uses [TorchCodec](https://github.com/pytorch/torchcodec) library. As TorchCodec is still in early stages of development and is installed from nightly builds, it may not work at some point or the API may change. This is likely to be the fastest video reader in the project.
+* [TorchcodecVideoReader](src/video_io/torchcodec_reader.py) - uses [TorchCodec](https://github.com/pytorch/torchcodec) library. As TorchCodec is still in early stages of development and is installed from nightly builds, it may not work at some point or the API may change, but it is the recommended native approach for PyTorch.
 * [VALIVideoReader](src/video_io/vali_reader.py) - uses [VALI](https://github.com/RomanArzumanyan/VALI) library, which is a continuation of the [VideoProcessingFramework](https://github.com/NVIDIA/VideoProcessingFramework) project, which was discontinued by Nvidia. Unlike [PyNvVideoCodec](https://pypi.org/project/PyNvVideoCodec/), which is the current substitution by Nvidia, VALI offers a more flexible solution that includes pixel format and color space conversion capabilities, as well as some low-level operations on surfaces. This allows it to be more powerful than PyNvVideoCodec, although it has a steeper learning curve, VALI allows for building more complex and optimized pipelines.
+* [PyNvVideoCodecReader](src/video_io/nvcodec_reader.py) - uses [PyNvVideoCodec](https://developer.nvidia.com/pynvvideocodec) project by Nvidia. It is one of the highest-performing options for decoding videos on Nvidia GPUs.
 
 A simple benchmark script is provided in [scripts/benchmark.py](scripts/benchmark.py). It compares the performance of different readers. Adjust parameters of the benchmark as required. To run the script, run the following command in the project container:
 
@@ -64,7 +65,7 @@ video_reader = TorchvisionVideoReader(
         "/workdir/data/videos/test.mp4", mode = "stream", output_format = "TCHW",
         device = "cuda:0")
 
-frames_to_read = list(range(0, 100, 5))  # Read every 5th from
+frames_to_read = list(range(0, 100, 5))  # Read every 5th frame
 tensor = video_reader.read_frames(frames_to_read)
 print(tensor.shape, tensor.device)  # Should be (20, 3, H, W), cuda:0
 ```
