@@ -1,4 +1,5 @@
 import os
+import asyncio
 from abc import ABCMeta, abstractmethod
 from typing import Any, Literal
 from pathlib import Path
@@ -76,7 +77,16 @@ class AbstractVideoReader(metaclass=ABCMeta):
 
     @abstractmethod
     def seek_read(self, frame_indices: list[int]) -> list[torch.Tensor]:
-        """Seek to each frame and read the frames from the video one by one."""
+        """Seek to each frame and read the frames from the video one by one.
+
+        Args:
+            frame_indices (list[int]): List of frame indices to read. Indices
+                are expected to be sorted, it is expected to be at least one
+                index in the list.
+
+        Returns:
+           list[np.ndarray]: List of frames from the video.
+        """
         pass
 
     @abstractmethod
@@ -142,6 +152,66 @@ class AbstractVideoReader(metaclass=ABCMeta):
 
         raise TypeError(
             f"Index must be an integer or slice, not {type(index)}")
+
+    async def seek_read_async(self, frame_indices: list[int])\
+            -> list[torch.Tensor]:
+        """Asynchronously seeks and reads frames.
+
+        Subclasses should override this method.
+        This default implementation calls the synchronous `seek_read`.
+
+        Args:
+            frame_indices (list[int]): List of frame indices to read. Indices
+                are expected to be sorted, it is expected to be at least one
+                index in the list.
+
+        Returns:
+           list[np.ndarray]: List of frames from the video.
+        """
+        return await asyncio.to_thread(self.seek_read, frame_indices)
+
+    async def stream_read_async(self, frame_indices: list[int])\
+            -> list[torch.Tensor]:
+        """Asynchronously streams and reads frames.
+
+        Subclasses should override this method.
+        This default implementation calls the synchronous `stream_read`.
+
+        Args:
+            frame_indices (list[int]): List of frame indices to read. Indices
+                are expected to be sorted, it is expected to be at least one
+                index in the list.
+
+        Returns:
+           list[np.ndarray]: List of frames from the video.
+        """
+        return await asyncio.to_thread(self.stream_read, frame_indices)
+
+    async def read_frames_async(self, frame_indices: list[int])\
+            -> torch.Tensor:
+        """Asynchronously reads frames.
+
+        This method will delegate to the `..._async` versions of the read
+        methods.
+
+        Args:
+            frame_indices (list[int]): List of frame indices to read. Indices
+                are expected to be sorted, it is expected to be at least one
+                index in the list.
+
+        Returns:
+            torch.Tensor: Decoded video frames tensor.
+        """
+        if min(frame_indices) < 0 or max(frame_indices) >= self.num_frames:
+            raise ValueError(f"Invalid frame indices {frame_indices} "
+                             f"in {self.video_path} video. "
+                             f"Must be in range [0, {self.num_frames - 1}]")
+        frames = []
+        if self.mode == "seek":
+            frames = await self.seek_read_async(frame_indices)
+        elif self.mode == "stream":
+            frames = await self.stream_read_async(frame_indices)
+        return self._finalize_tensor(frames)
 
     def __repr__(self) -> str:
         return (f"Video {self.video_path}: "
