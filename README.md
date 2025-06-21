@@ -10,6 +10,9 @@ The talk's slides are available [here](https://docs.google.com/presentation/d/1Q
 
 It contains examples of different approaches to decoding video frames directly into tensors, which can be used for training deep learning models with PyTorch.
 
+![Benchmarks results](/readme_imgs/benchmarks.png)
+_[Added 21/06/2025] Time of video decoding into PyTorch tensors for different video readers in different modes. The reported values are for decoding 10 frames into PyTorch tensors from 1080p 30fps video file: [Big Buck Bunny](https://download.blender.org/demo/movies/BBB/). The results were obtained using Nvidia RTX 3090 for hardware acceleration of all decoders._
+
 ## Prerequisites
 
 * Nvidia GPU with Video Encode and Decode feature [CUVID](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new). Nvidia Driver version >= 570.
