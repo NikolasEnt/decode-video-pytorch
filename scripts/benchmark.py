@@ -8,6 +8,7 @@ from src.video_io import VALIVideoReader, OpenCVVideoReader, \
     AbstractVideoReader, PyNvVideoCodecReader, TorchcodecVideoReader, \
     TorchvisionVideoReader
 
+# Provide your test video files here.
 VIDEO_PATHS = [
     "/workdir/data/videos/test.mp4",
 ]
@@ -17,6 +18,7 @@ N_PASSES = 3  # Number of times to repeat the benchmark for each video
 FRAMES_TO_READ_SEQUENTIAL = list(range(10, 20))
 FRAMES_TO_READ_SLICE = list(range(10, 200, 20))
 
+# Define the video readers to test
 VIDEO_READERS = [
     TorchcodecVideoReader,
     OpenCVVideoReader,
@@ -26,6 +28,7 @@ VIDEO_READERS = [
 ]
 
 MODES_TO_USE = ["seek", "stream"]
+# Note that some of the video readers don't support 'cpu'
 DEVICE = "cuda:0"
 
 if DEVICE.startswith("cuda:"):
