@@ -1,5 +1,5 @@
-numpy==2.3.0
 kornia==0.8.1
-pyav==14.2.1  # for torchvision.io.read_video
-PyNvVideoCodec==2.0.0
+PyNvVideoCodec==2.0.1
 python-vali==4.8.0
+av==14.4.0
+pytest==8.4.1
