@@ -71,11 +71,11 @@ In addition, there are some other examples of video-related components in the pr
 ### Try one of the video readers:
 
 ```python
-from src.video_io import TorchvisionVideoReader
+from src.video_io import TorchcodecVideoReader
 
-video_reader = TorchvisionVideoReader(
-        "/workdir/data/videos/test.mp4", mode = "stream", output_format = "TCHW",
-        device = "cuda:0")
+video_reader = TorchcodecVideoReader(
+    "/workdir/data/videos/test.mp4", mode = "stream", output_format = "TCHW",
+    device = "cuda:0")
 
 frames_to_read = list(range(0, 100, 5))  # Read every 5th frame
 tensor = video_reader.read_frames(frames_to_read)
