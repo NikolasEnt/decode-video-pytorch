@@ -1,3 +1,5 @@
+import os
+
 import torch
 import pytest
 
@@ -24,6 +26,9 @@ TORCH_DEVICE = torch.device(DEVICE)
 
 @pytest.mark.skipif(not torch.cuda.is_available(),
                     reason="CUDA is not available")
+@pytest.mark.skipif(not os.path.exists(VIDEO_PATH),
+                    reason=(f"Video file {VIDEO_PATH} does not exist, "
+                            "please provide a test video file"))
 @pytest.mark.parametrize("reader_class", VIDEO_READERS)
 @pytest.mark.parametrize("mode", MODES)
 @pytest.mark.parametrize("output_format", OUTPUT_FORMATS.keys())
@@ -55,6 +60,11 @@ def test_video_reader(reader_class, mode, output_format):
 MAX_AVG_PIXEL_DIFF = 6.0
 
 
+@pytest.mark.skipif(not torch.cuda.is_available(),
+                    reason="CUDA is not available")
+@pytest.mark.skipif(not os.path.exists(VIDEO_PATH),
+                    reason=(f"Video file {VIDEO_PATH} does not exist, "
+                            "please provide a test video file"))
 @pytest.mark.parametrize("reader_class", VIDEO_READERS)
 @pytest.mark.parametrize("output_format", OUTPUT_FORMATS.keys())
 def test_modes_equality(reader_class, output_format):
