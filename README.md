@@ -8,9 +8,7 @@ The repo was originally developed to illustrate a talk given at the [London PyTo
       by <i>Nikolay Falaleev</i> on 21/11/2024
 </h5>
 
-The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing) Note that the code was substantially updated since the talk's presentation, including new video readers and improvements in the code structure.
-
-It contains examples of different approaches to decoding video frames directly into tensors, which can be used for training deep learning models with PyTorch.
+The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing). Note that the code was substantially updated since the talk's presentation, including new video readers and improvements in the code structure.
 
 ![Benchmarks results](/readme_imgs/benchmarks.png)
 _Time of video decoding into PyTorch tensors for different video readers in different modes. The reported values are for decoding 10 frames into PyTorch tensors from 1080p 30fps video file: [Big Buck Bunny](https://download.blender.org/demo/movies/BBB/). The results were obtained using Nvidia RTX 3090 for hardware acceleration of all decoders._
