@@ -1,6 +1,6 @@
 # Video decoding for DL models training with PyTorch
 
-This project demonstrates various approaches to decoding video frames into PyTorch tensors with hardware acceleration, providing benchmarks and examples to help users select the most efficient video reader for their deep learning workflows.
+This project demonstrates various approaches to decoding video frames into PyTorch tensors with hardware acceleration, providing benchmarks and examples to help helping users choose the most efficient video reader for their deep learning workflows.
 
 The repo was originally developed to illustrate a talk given at the [London PyTorch Meetup](https://www.meetup.com/London-PyTorch-Meetup/):
 <h5 align="center">
@@ -8,7 +8,7 @@ The repo was originally developed to illustrate a talk given at the [London PyTo
       by <i>Nikolay Falaleev</i> on 21/11/2024
 </h5>
 
-The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing). Note that the code was substantially updated since the talk's presentation, including new video readers and improvements in the code structure.
+The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing). Note that the code has been substantially updated since the talk's presentation, including new video readers and improvements in the code structure.
 
 ![Benchmarks results](/readme_imgs/benchmarks.png)
 _Time of video decoding into PyTorch tensors for different video readers in different modes. The reported values are for decoding 10 frames into PyTorch tensors from 1080p 30fps video file: [Big Buck Bunny](https://download.blender.org/demo/movies/BBB/). The results were obtained using Nvidia RTX 3090 for hardware acceleration of all decoders._
@@ -22,7 +22,7 @@ _Time of video decoding into PyTorch tensors for different video readers in diff
 
 ## How to run
 
-The project is provided with a Docker environment that includes PyTorch, as well as FFmpeg and OpenCV, which are compiled from source with NVIDIA hardware acceleration support.
+The project provides a Docker environment that includes PyTorch, along with FFmpeg and OpenCV, both compiled from source with NVIDIA hardware acceleration support.
 
 1. Build Docker image:
 
@@ -40,7 +40,7 @@ The Docker container will have the project folder mounted to `/workdir`, includi
 All the following can be executed inside the running container.
 
 ## Benchmarking
-A simple benchmark script is provided in [scripts/benchmark.py](scripts/benchmark.py). It compares the performance of different readers available in the project running in different modes.
+A simple benchmark script is provided in [scripts/benchmark.py](scripts/benchmark.py). It compares the performance of the different readers available in the project when running in different modes.
 
 In order to run benchmarks, provide representative video files and update parameters of the benchmarking process in [scripts/benchmark.py](scripts/benchmark.py). Please note that the results heavily depend on video file features, including encoding parameters and resolution. Another critical aspect is the required sampling strategy - whether it is required to sample individual frames randomly, a sequence of frames or a sparse subset of frames. That is why it is recommended to run the benchmark with parameters representing the actual use case of the video reader to select the most appropriate one as well as select the best strategy for reading frames.
 
@@ -111,7 +111,7 @@ _device_ (str, optional): Device to send the resulted tensor to. If possible, th
 This project demonstrates the use of several great open-source libraries and frameworks:
 
 - **[Torchcodec](https://github.com/pytorch/torchcodec)** – an experimental PyTorch library for video decoding, which is actively developed and offers promising native integration with PyTorch.
-- **[VALI](https://github.com/RomanArzumanyan/VALI)** – a powerful and flexible video processing library, based on the discontinued NVIDIA Video Processing Framework. It provides low-level control and is particularly well-suited for complex hardware-accelerated pipelines, where some additional frame processing (colour space conversion, resizing, etc.) is required as part of the pilelien.
+- **[VALI](https://github.com/RomanArzumanyan/VALI)** – a powerful and flexible video processing library, based on the discontinued NVIDIA Video Processing Framework. It provides low-level control and is particularly well-suited for complex hardware-accelerated pipelines, where some additional frame processing (colour space conversion, resizing, etc.) is required as part of the pipeline.
 - **[PyNvVideoCodec](https://developer.nvidia.com/pynvvideocodec)** – an official NVIDIA project that provides Python bindings for video decoding using CUDA and NVDEC.
 - **[OpenCV](https://opencv.org/)** – a widely-used computer vision library, with hardware-accelerated video decoding capabilities when compiled with FFmpeg and CUDA support.
 - **[Kornia](https://kornia.org/)** – an open-source computer vision library for PyTorch, used in this project for video data augmentation examples.
