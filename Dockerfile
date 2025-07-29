@@ -1,9 +1,9 @@
 ARG CUDA_VERSION=12.8.1
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu24.04
 
-ENV LANG C.UTF-8
-ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
-ENV DEBIAN_FRONTEND noninteractive
+ENV LANG=C.UTF-8
+ENV NVIDIA_DRIVER_CAPABILITIES=video,compute,utility
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt -y upgrade && \
     apt-get -y install software-properties-common apt-utils git \
@@ -85,7 +85,7 @@ RUN mkdir /tmp/opencv && cd /tmp/opencv && \
     make -j$(nproc) && make install && ldconfig && cd && rm -r /tmp/opencv
 
 # Install PyTorch
-RUN pip3 install --no-cache-dir torch==2.7.0 torchvision==0.22 torchaudio==2.7.0 torchcodec==0.4.0 --index-url\
+RUN pip3 install --no-cache-dir torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 torchcodec==0.5 --index-url\
     https://download.pytorch.org/whl/cu128
 
 # Main system requirements
@@ -93,7 +93,7 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install --no-cache-dir -r /tmp/requirements.txt
 
 ENV CUDA_DEVICE_ORDER=PCI_BUS_ID
-ENV PYTHONPATH $PYTHONPATH:/workdir
+ENV PYTHONPATH=$PYTHONPATH:/workdir
 ENV TORCH_HOME=/workdir/data/.torch
 
 WORKDIR /workdir
