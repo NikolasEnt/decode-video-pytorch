@@ -11,7 +11,7 @@ The repo was originally developed to illustrate a talk given at the [London PyTo
 The talk's slides are available [here](https://docs.google.com/presentation/d/1Qw9Cy0Pjikf5IBdZIGVqK968cKepKN2GuZD6hA1At8s/edit?usp=sharing). Note that the code has been substantially updated since the talk's presentation, including new video readers and improvements in the code structure.
 
 ![Benchmarks results](/readme_imgs/benchmarks.png)
-_Time of video decoding into PyTorch tensors for different video readers in different modes. The reported values are for decoding 10 frames into PyTorch tensors from 1080p 30fps video file: [Big Buck Bunny](https://download.blender.org/demo/movies/BBB/). The results were obtained using Nvidia RTX 3090 for hardware acceleration of all decoders._
+_Time of video decoding into PyTorch tensors for different video readers in different modes. The reported values are for decoding 10 frames into PyTorch tensors from 1080p 30fps video file: [Big Buck Bunny](https://download.blender.org/demo/movies/BBB/). The results were obtained using Nvidia RTX 3090 for hardware acceleration of all decoders using v. 0.1.0._
 
 ## Prerequisites
 
