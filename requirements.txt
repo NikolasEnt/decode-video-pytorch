@@ -2,4 +2,4 @@ kornia==0.8.3
 PyNvVideoCodec==2.1.0
 python-vali==4.8.7
 av==17.1.0
-pytest==9.0.3
+pytest==9.1.0
